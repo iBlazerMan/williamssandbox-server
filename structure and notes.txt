@@ -1,0 +1,13 @@
+server.ts/index.ts: entry point
+
+serverInterface: static types, shared between front and backend
+
+serverRequest: http requests to server route, stored at the front end
+    (ex: const {sendText} = serverRequests(serverUrl))
+
+registerRoutes: accepts a server: FastifyInstance and register all routes
+
+application.route.ts: routes creation
+applicationRequestHandler.ts: request implementation
+
+clientObjects: provides a .init method, create all clients. other methods to retrieve/modify/create clients as well.
