@@ -1,58 +1,47 @@
-import Fastify, { FastifyInstance } from "fastify"
+import Fastify, { FastifyReply, FastifyRequest } from "fastify"
 import { TypeBoxTypeProvider } from "@fastify/type-provider-typebox"
-import { CronJob } from "cron"
+import cors from "@fastify/cors"
+import fs from "fs"
 
 import ClientManager from "./lib/clientManager"
 import registerRoute from "./registerRoute"
+import ExchangeRateManager from "./lib/exchangeRateManager"
+import serverConfig from "./secret/serverConfig"
 
+const server = Fastify({logger: true}).withTypeProvider<TypeBoxTypeProvider>()
+// IP provider
+server.register(cors, {
+    origin: [serverConfig.serverEnv === "development" ? "http://localhost:3000" : 
+        serverConfig.serverEnv === "production" ? "https://williamssandbox.com" : ""],
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: true,
+})
 
-const server = Fastify().withTypeProvider<TypeBoxTypeProvider>(); 
-(async () => {
+// 
+server.addHook("onRequest", (request: FastifyRequest, reply: FastifyReply, done) => {
+    if (serverConfig.serverEnv === "production" && !serverConfig.allowedIp.includes(request.ip)) {
+        reply.code(403).send({ error: "403 Forbidden" })
+        return done()
+    } else {
+        done()
+    }
+  
+})
+
+;(async () => {
+    const exchangeRateApiId = JSON.parse(fs.readFileSync("./secret/openExchangeRates.json", "utf-8").toString()).appId
+    if (!exchangeRateApiId || exchangeRateApiId === "") {
+        throw new ReferenceError("openExchangeRates file missing appId")
+    }
     registerRoute(server)
-    ClientManager.getClientManager()
+    await ClientManager.getClientManager()
+    await ExchangeRateManager.initExchangeRateManager(exchangeRateApiId)
 })()
-
-const appId = "4088bfa933724882939cb8271515ad52"
 
 server.get("/ping", async (req, res) => {
     res.send("pong\n") 
-})
-
-server.get("/currencyExchangeRate", async(req, res) => {
-    let exchangeRatesResponse
-    try {
-        exchangeRatesResponse = await fetch(`https://openexchangerates.org/api/latest.json?app_id=${appId}`)
-    } catch (err) {
-        console.error("Error fetching exchange rates: " + err)
-        throw err
-    }
-    
-    let exchangeRatesResponseJson
-    try {
-        exchangeRatesResponseJson = await exchangeRatesResponse.json()
-    } catch(err) {
-        console.error("Error parsing response to JSON: " + err)
-        throw err
-    }
-
-    let exchangeRates
-    if (exchangeRatesResponseJson.rates) {
-        exchangeRates = exchangeRatesResponseJson.rates
-    } else {
-        throw new ReferenceError("the returned JSON object does not have property 'rates'")
-    }
-
-    console.warn(`CAD: ${exchangeRates.CAD}, CNY: ${exchangeRates.CNY}, conversion: ${exchangeRates.CNY / exchangeRates.CAD}`)
-    res.send(exchangeRates)
-})
-
-// const checkAPI = async 
-
-const hourlyCheck = new CronJob("0 * * * * *", () => {
-    console.log(Date)
-})
-
-hourlyCheck.start()
+}) 
 
 server.listen({port: 8080}, (err, address) => {
     if (err) {
