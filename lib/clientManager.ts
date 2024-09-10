@@ -21,8 +21,8 @@ type SqlCredentials = {
 }
 
 // TODO: move all file read to index(server).ts and pass the credential object to here
-const awsCredentialFilePath = "./secrets/aws.json"
-const sqlCredetialFilePath = "./secrets/mysql.json"
+const awsCredentialFilePath = "./aws.json"
+const sqlCredetialFilePath = "./mysql.json"
 
 function readAwsCredentials(awsCredentialFilePath: string): AwsCredential {
     // do not catch error if JSON.parse or fs.readFileSync fails, server cannot start without
