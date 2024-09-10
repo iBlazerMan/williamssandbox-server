@@ -83,9 +83,6 @@ export default class ClientManager {
 
         const sqlCredentials = readSqlCredentials(sqlCredetialFilePath)
 
-        // DEBUG
-        console.log(sqlCredentials)
-
         const sqlPool: Pool = mysql.createPool({
             host: sqlCredentials.host,
             user: sqlCredentials.user,
