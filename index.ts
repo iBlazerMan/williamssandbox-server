@@ -6,8 +6,16 @@ import fs from "fs"
 import ClientManager from "./lib/clientManager"
 import registerRoute from "./registerRoute"
 import ExchangeRateManager from "./lib/exchangeRateManager"
-import serverConfig from "./secret/serverConfig"
 
+const serverConfigFilePath = "./secrets/serverConfig.json"
+const exchangeRateApiIdFilePath = "./secrets/openExchangeRates.json"
+
+type ServerConfig = {
+    serverEnv: string,
+    allowedIps: string[]
+}
+
+const serverConfig: ServerConfig = JSON.parse(fs.readFileSync(serverConfigFilePath, "utf-8"))
 const server = Fastify({logger: true}).withTypeProvider<TypeBoxTypeProvider>()
 // IP provider
 server.register(cors, {
@@ -20,7 +28,7 @@ server.register(cors, {
 
 // 
 server.addHook("onRequest", (request: FastifyRequest, reply: FastifyReply, done) => {
-    if (serverConfig.serverEnv === "production" && !serverConfig.allowedIp.includes(request.ip)) {
+    if (serverConfig.serverEnv === "production" && !serverConfig.allowedIps.includes(request.ip)) {
         reply.code(403).send({ error: "403 Forbidden" })
         return done()
     } else {
@@ -30,7 +38,7 @@ server.addHook("onRequest", (request: FastifyRequest, reply: FastifyReply, done)
 })
 
 ;(async () => {
-    const exchangeRateApiId = JSON.parse(fs.readFileSync("./secret/openExchangeRates.json", "utf-8").toString()).appId
+    const exchangeRateApiId = JSON.parse(fs.readFileSync(exchangeRateApiIdFilePath, "utf-8").toString()).appId
     if (!exchangeRateApiId || exchangeRateApiId === "") {
         throw new ReferenceError("openExchangeRates file missing appId")
     }

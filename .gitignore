@@ -1,8 +1,8 @@
 # See https://help.github.com/ignore-files/ for more about ignoring files.
 
 # credentials
-secret/*
-!secret/credential_setup.txt
+secrets/*
+!secrets/credential_setup.txt
 
 # dependencies
 /node_modules
