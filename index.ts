@@ -51,7 +51,8 @@ server.get("/ping", async (req, res) => {
     res.send("pong\n") 
 }) 
 
-server.listen({port: 8080}, (err, address) => {
+
+server.listen({port: 10000, host: "0.0.0.0"}, (err, address) => {
     if (err) {
         console.error("Error:" + err)
         process.exit(1)
