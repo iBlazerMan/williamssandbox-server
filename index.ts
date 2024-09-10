@@ -27,19 +27,14 @@ server.register(cors, {
 })
 
 // 
-server.addHook("onRequest", (request: FastifyRequest, reply: FastifyReply, done) => {
-
-    // DEBUG
-    console.log("request IP: " + request.ip)
-
-    if (serverConfig.serverEnv === "production" && !serverConfig.allowedIps.includes(request.ip)) {
-        reply.code(403).send({ error: "403 Forbidden" })
-        return done()
-    } else {
-        done()
-    }
-  
-})
+// server.addHook("onRequest", (request: FastifyRequest, reply: FastifyReply, done) => {
+//     if (serverConfig.serverEnv === "production" && !serverConfig.allowedIps.includes(request.ip)) {
+//         reply.code(403).send({ error: "403 Forbidden" })
+//         return done()
+//     } else {
+//         done()
+//     }
+// })
 
 ;(async () => {
     const exchangeRateApiId = JSON.parse(fs.readFileSync(exchangeRateApiIdFilePath, "utf-8").toString()).appId
