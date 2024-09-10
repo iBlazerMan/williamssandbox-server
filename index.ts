@@ -7,8 +7,8 @@ import ClientManager from "./lib/clientManager"
 import registerRoute from "./registerRoute"
 import ExchangeRateManager from "./lib/exchangeRateManager"
 
-const serverConfigFilePath = "./secrets/serverConfig.json"
-const exchangeRateApiIdFilePath = "./secrets/openExchangeRates.json"
+const serverConfigFilePath = "./serverConfig.json"
+const exchangeRateApiIdFilePath = "./openExchangeRates.json"
 
 type ServerConfig = {
     serverEnv: string,
