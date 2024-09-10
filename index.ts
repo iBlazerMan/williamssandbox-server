@@ -16,7 +16,7 @@ type ServerConfig = {
 }
 
 const serverConfig: ServerConfig = JSON.parse(fs.readFileSync(serverConfigFilePath, "utf-8"))
-const server = Fastify({logger: true}).withTypeProvider<TypeBoxTypeProvider>()
+const server = Fastify( {logger: true, trustProxy: true} ).withTypeProvider<TypeBoxTypeProvider>()
 // IP provider
 server.register(cors, {
     origin: [serverConfig.serverEnv === "development" ? "http://localhost:3000" : 
