@@ -1,5 +1,5 @@
 import { FastifyRequest, FastifyReply } from "fastify"
-import { GetExchangeRateRequest, GetExchangeRateResponse, VerifySignInRequest } from "../serverTypeDefine"
+import { GetExchangeRateRequest, GetExchangeRateResponse, VerifySignInRequest, AddSubscriptionRequest } from "../serverTypeDefine"
 
 import ExchangeRateManager from "../lib/exchangeRateManager"
 import { Pool, RowDataPacket } from "mysql2"
@@ -29,7 +29,7 @@ export default {
                 `
                     SELECT *
                     FROM users
-                    WHERE contact_info = ? AND contact_type = ?
+                    WHERE contactInfo = ? AND contactType = ?
                 `,
                 [contactInfo, contactType]
             ) as RowDataPacket[][]
@@ -42,13 +42,13 @@ export default {
             const user = queryResult[0][0]
             console.log(queryResult[0])
 
-            if (user.verification_code !== verificationCode) {
+            if (user.verificationCode !== verificationCode) {
                 reply.code(401).send({ status: "failed" })
                 return
             }
 
             const currentTime = new Date()
-            const verificationCodeExpiration = new Date(user.code_expiration)
+            const verificationCodeExpiration = new Date(user.codeExpiration)
 
             if (currentTime > verificationCodeExpiration) {
                 reply.code(401).send({ status: "expired" })
@@ -60,6 +60,35 @@ export default {
         } catch(err) {
             console.error("failed to query sql: " + err)
             reply.code(500).send({ status: "server error" })
+            return
+        }
+    },
+
+    async addSubscription(request: FastifyRequest<{Body: AddSubscriptionRequest}>, reply: FastifyReply) {
+        const {contactInfo, contactType, fromCurrency, toCurrency, desiredValue, minimumCooldown} = request.body
+
+        // TODO: add current subscription count check, return failure if max reached
+
+        // use the current time as the currentCooldown value since the subscription is fresh and no cooldown
+        // is required before sending the first alert
+        const currentTime = new Date()
+        const currentTimeString = currentTime.toISOString().slice(0, 19).replace("T", " ")
+
+        try {
+            const sqlPool: Pool = (await ClientManager.getClientManager()).getSqlPool()
+            sqlPool.query(
+                `
+                    INSERT INTO subscriptions (contactInfo, contactType, fromCurrency, toCurrency, 
+                    desiredValue, minimumCooldown, currentCooldown)
+                    VALUES (?, ?, ?, ?, ?, ?, ?)
+                `,
+                [contactInfo, contactType, fromCurrency, toCurrency, desiredValue, minimumCooldown, currentTimeString]
+            )
+        } catch(err) {
+            console.error("failed to add subscription to MySQL: " + err)
+
+            // TODO: add proper error message
+            reply.code(500).send()
             return
         }
     }

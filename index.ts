@@ -7,8 +7,8 @@ import ClientManager from "./lib/clientManager"
 import registerRoute from "./registerRoute"
 import ExchangeRateManager from "./lib/exchangeRateManager"
 
-const serverConfigFilePath = "./serverConfig.json"
-const exchangeRateApiIdFilePath = "./openExchangeRates.json"
+const serverConfigFilePath = "./etc/secrets/serverConfig.json"
+const exchangeRateApiIdFilePath = "./etc/secrets/openExchangeRates.json"
 
 type ServerConfig = {
     serverEnv: string,
@@ -51,7 +51,13 @@ server.get("/ping", async (req, res) => {
 }) 
 
 
-server.listen({port: 10000, host: "0.0.0.0"}, (err, address) => {
+server.listen(
+    {
+        port: serverConfig.serverEnv === "development" ? 8080 : 
+            serverConfig.serverEnv === "production" ? 10000 : 0, 
+        host: serverConfig.serverEnv === "development" ? "localhost" : 
+            serverConfig.serverEnv === "production" ? "0.0.0.0" : ""
+    }, (err, address) => {
     if (err) {
         console.error("Error:" + err)
         process.exit(1)

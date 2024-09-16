@@ -46,16 +46,19 @@ export default {
             const sqlPool: Pool = (await ClientManager.getClientManager()).getSqlPool()
             sqlPool.query(
                 `
-                    INSERT INTO users (contact_type, contact_info, verification_code, code_expiration)
+                    INSERT INTO users (contactType, contactInfo, verificationCode, codeExpiration)
                     VALUES (?, ?, ?, ?) AS user
                     ON DUPLICATE KEY UPDATE
-                    verification_code = user.verification_code,
-                    code_expiration = user.code_expiration;
+                    verificationCode = user.verificationCode,
+                    codeExpiration = user.codeExpiration;
                 `,
                 ["phone", destNumber, randomNumberString, expirationDateString]
             )
         } catch(err) {
             console.error("failed to perform sql insert: " + err)
+
+            // TODO: add proper error message
+            reply.code(500).send()
             return
         }
         

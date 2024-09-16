@@ -44,6 +44,17 @@ export const verifySignInRequest = Type.Object({
 })
 export type VerifySignInRequest = Static<typeof verifySignInRequest>
 
+export const addSubscriptionRequestUrl = "/subscription/addSubscription"
+export const addSubscriptionRequest = Type.Object({
+  contactType: Type.String({ minLength: 1 }),
+  contactInfo: Type.String({ minLength: 1 }),
+  fromCurrency: Type.String({ minLength: 1 }),
+  toCurrency: Type.String({ minLength: 1 }),
+  desiredValue: Type.Number(),
+  minimumCooldown: Type.String({ minLength: 1 }),
+})
+export type AddSubscriptionRequest = Static<typeof addSubscriptionRequest>
+
 // response
 export const getExchangeRateResponse = Type.Object({
   rate: Type.Number(),

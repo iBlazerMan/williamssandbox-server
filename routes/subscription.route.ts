@@ -1,5 +1,6 @@
 import { FastifyInstance } from "fastify"
-import { getExchangeRateRequest, getExchangeRateResponse, getExchangeRateRequestUrl, verifySignInRequestUrl, verifySignInRequest, verifySignInResponse } from "../serverTypeDefine"
+import { getExchangeRateRequest, getExchangeRateResponse, getExchangeRateRequestUrl, verifySignInRequestUrl, 
+    verifySignInRequest, verifySignInResponse, addSubscriptionRequestUrl, addSubscriptionRequest } from "../serverTypeDefine"
 import subscriptionHandler from "../routeHandlers/subscriptionHandler"
 
 
@@ -24,6 +25,17 @@ export default {
                     200: verifySignInResponse,
                     401: verifySignInResponse,
                     500: verifySignInResponse
+                }
+            }
+        }),
+
+        server.post(addSubscriptionRequestUrl, {
+            handler: subscriptionHandler.addSubscription,
+            schema: {
+                body: addSubscriptionRequest,
+                response: {
+                    200: {},
+                    500: {}
                 }
             }
         })

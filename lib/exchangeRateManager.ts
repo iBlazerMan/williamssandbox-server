@@ -18,11 +18,6 @@ export default class ExchangeRateManager {
         this.hourlyExchangeRateJob = new CronJob("0 0 * * * *", async () => {
         // FIXME: DEBUG
         //     await this.pullExchangeRates()
-
-        //     // FIXME: pull from DB, just testing right now
-        //     // for (const numbers of numbersToTest) {
-        //     //     await 
-        //     // }
         })
         this.hourlyExchangeRateJob.start()
     }
@@ -36,9 +31,7 @@ export default class ExchangeRateManager {
 
     static async initExchangeRateManager(exchangeRateApiId: string): Promise<ExchangeRateManager> {
         ExchangeRateManager.instance = new ExchangeRateManager(exchangeRateApiId)
-
-        // FIXME: DEBUG
-        // await ExchangeRateManager.instance.pullExchangeRates()
+        await ExchangeRateManager.instance.pullExchangeRates()
 
         return ExchangeRateManager.instance
     }
@@ -60,7 +53,7 @@ export default class ExchangeRateManager {
             throw new ReferenceError(`at least 1 of the following currencies: 
                 ${fromCurrency} or ${toCurrency} does not exist`)
         } else {
-            return this.currentExchangeRate[fromCurrency] / this.currentExchangeRate[toCurrency]
+            return this.currentExchangeRate[toCurrency] / this.currentExchangeRate[fromCurrency]
         }
     }
 
