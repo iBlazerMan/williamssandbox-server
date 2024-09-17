@@ -36,6 +36,12 @@ export const getExchangeRateRequest = Type.Object({
 })
 export type GetExchangeRateRequest = Static<typeof getExchangeRateRequest>
 
+export const getExchangeRateResponse = Type.Object({
+  rate: Type.Number(),
+  lastUpdated: Type.String({ format: "date-time" }),
+})
+export type GetExchangeRateResponse = Static<typeof getExchangeRateResponse>
+
 export const verifySignInRequestUrl = "/subscription/verifySignIn"
 export const verifySignInRequest = Type.Object({
   contactType: Type.String({ minLength: 1 }),
@@ -43,6 +49,11 @@ export const verifySignInRequest = Type.Object({
   verificationCode: Type.String({ minLength: 1 }),
 })
 export type VerifySignInRequest = Static<typeof verifySignInRequest>
+
+export const verifySignInResponse = Type.Object({
+  status: Type.String({ minLength: 1 }),
+})
+export type VerifySignInResponse = Static<typeof verifySignInResponse>
 
 export const addSubscriptionRequestUrl = "/subscription/addSubscription"
 export const addSubscriptionRequest = Type.Object({
@@ -55,14 +66,35 @@ export const addSubscriptionRequest = Type.Object({
 })
 export type AddSubscriptionRequest = Static<typeof addSubscriptionRequest>
 
-// response
-export const getExchangeRateResponse = Type.Object({
-  rate: Type.Number(),
-  lastUpdated: Type.String({ format: "date-time" }),
+export const getSubscriptionRequestUrl = "/subscription/getSubscription"
+export const getSubscriptionRequest = Type.Object({
+  contactType: Type.String({ minLength: 1 }),
+  contactInfo: Type.String({ minLength: 1 }),
 })
-export type GetExchangeRateResponse = Static<typeof getExchangeRateResponse>
+export type GetSubscriptionRequest = Static<typeof getSubscriptionRequest>
 
-export const verifySignInResponse = Type.Object({
-  status: Type.String({ minLength: 1 }),
+export const subscription = Type.Object({
+  subscriptionId: Type.Number(),
+  fromCurrency: Type.String({ minLength: 1 }),
+  toCurrency: Type.String({ minLength: 1 }),
+  desiredValue: Type.Number(),
+  minimumCooldown: Type.String({ minLength: 1 }),
+  currentCooldown: Type.String({ minLength: 1 }),
 })
-export type VerifySignInResponse = Static<typeof verifySignInResponse>
+export type Subscription = Static<typeof subscription>
+
+export const getSubscriptionResponse = Type.Array(subscription)
+export type GetSubscriptionResponse = Static<typeof getSubscriptionResponse>
+
+export const deleteSubscriptionRequestUrl = "/subscription/deleteSubscription"
+export const deleteSubscriptionRequest = Type.Object({
+  subscriptionId: Type.Number(),
+})
+export type DeleteSubscriptionRequest = Static<typeof deleteSubscriptionRequest>
+
+export const deleteUserRequestUrl = "/subscription/deleteUser"
+export const deleteUserRequest = Type.Object({
+  contactType: Type.String({ minLength: 1 }),
+  contactInfo: Type.String({ minLength: 1 }),
+})
+export type DeleteUserRequest = Static<typeof deleteUserRequest>
