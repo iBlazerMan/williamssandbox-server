@@ -1,5 +1,5 @@
 import { FastifyRequest, FastifyReply } from "fastify"
-import { GetExchangeRateRequest, GetExchangeRateResponse, VerifySignInRequest, AddSubscriptionRequest, GetSubscriptionRequest, Subscription, DeleteSubscriptionRequest } from "../serverTypeDefine"
+import { GetExchangeRateRequest, GetExchangeRateResponse, VerifySignInRequest, AddSubscriptionRequest, GetSubscriptionRequest, Subscription, DeleteSubscriptionRequest, DeleteUserRequest } from "../serverTypeDefine"
 
 import ExchangeRateManager from "../lib/exchangeRateManager"
 import { Pool, RowDataPacket } from "mysql2"
@@ -53,7 +53,7 @@ export default {
                 reply.code(401).send({ status: "expired" })
                 return
             } else {
-                reply.send({ status: "success"})
+                reply.send({ status: "success", userId: user.userId })
                 return
             }
         } catch(err) {
@@ -145,7 +145,29 @@ export default {
                 [subscriptionId]
             )
         } catch(err) {
-            console.error("failed to add subscription to MySQL: " + err)
+            console.error("failed to delete subscription from MySQL: " + err)
+
+            // TODO: add proper error message
+            reply.code(500).send()
+            return
+        }
+    },
+
+    async deleteUser(request: FastifyRequest<{ Querystring: DeleteUserRequest}>, reply: FastifyReply) {
+        const { userId } = request.query
+
+        try {
+            const sqlPool: Pool = (await ClientManager.getClientManager()).getSqlPool()
+            sqlPool.query(
+                `
+                    DELETE 
+                    FROM users
+                    WHERE userId = ?
+                `,
+                [userId]
+            )
+        } catch(err) {
+            console.error("failed to delete user from MySQL: " + err)
 
             // TODO: add proper error message
             reply.code(500).send()

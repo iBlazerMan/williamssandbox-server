@@ -52,6 +52,7 @@ export type VerifySignInRequest = Static<typeof verifySignInRequest>
 
 export const verifySignInResponse = Type.Object({
   status: Type.String({ minLength: 1 }),
+  userId: Type.Optional(Type.Number()),
 })
 export type VerifySignInResponse = Static<typeof verifySignInResponse>
 
@@ -94,7 +95,6 @@ export type DeleteSubscriptionRequest = Static<typeof deleteSubscriptionRequest>
 
 export const deleteUserRequestUrl = "/subscription/deleteUser"
 export const deleteUserRequest = Type.Object({
-  contactType: Type.String({ minLength: 1 }),
-  contactInfo: Type.String({ minLength: 1 }),
+  userId: Type.Number(),
 })
 export type DeleteUserRequest = Static<typeof deleteUserRequest>

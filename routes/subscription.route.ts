@@ -5,7 +5,9 @@ import { getExchangeRateRequest, getExchangeRateResponse, getExchangeRateRequest
     getSubscriptionRequest,
     getSubscriptionResponse,
     deleteSubscriptionRequestUrl,
-    deleteSubscriptionRequest} from "../serverTypeDefine"
+    deleteSubscriptionRequest,
+    deleteUserRequestUrl,
+    deleteUserRequest} from "../serverTypeDefine"
 import subscriptionHandler from "../routeHandlers/subscriptionHandler"
 
 
@@ -64,6 +66,17 @@ export default {
                 response: {
                     200: {},
                     500: {}
+                }
+            }
+        }),
+
+        server.delete(deleteUserRequestUrl, {
+            handler: subscriptionHandler.deleteUser,
+            schema: {
+                querystring: deleteUserRequest,
+                response: {
+                    200: {},
+                    500: {},
                 }
             }
         })
