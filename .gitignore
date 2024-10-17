@@ -2,7 +2,7 @@
 
 # credentials
 etc/secrets/*
-# !etc/secrets/credential_setup.txt
+!etc/secrets/credential_setup.txt
 
 # dependencies
 /node_modules
